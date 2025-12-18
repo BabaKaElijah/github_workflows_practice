@@ -25,5 +25,11 @@ jobs:
     needs: hello
     runs-on: ubuntu-latest
     steps:
-      - name: Try listing files without checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List files in second job
         run: ls
+
+      - name: Say hello from second job
+        run: echo "Hello from second job"
