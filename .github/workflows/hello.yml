@@ -28,15 +28,22 @@ jobs:
       - name: List repository files
         run: ls
 
-      - name: Set output value
+      - name: Set static output value
         id: set_value
         run: echo "my_output=123" >> $GITHUB_OUTPUT
+
+      - name: Generate dynamic value
+        id: generate
+        env:
+          STEP_VAR: "Dynamic123"
+        run: echo "my_output=$STEP_VAR" >> $GITHUB_OUTPUT
 
       - name: Say hello
         run: echo "Hello from GitHub Actions"
 
     outputs:
-      VALUE_FROM_HELLO: ${{ steps.set_value.outputs.my_output }}
+      STATIC_VALUE: ${{ steps.set_value.outputs.my_output }}
+      DYNAMIC_VALUE: ${{ steps.generate.outputs.my_output }}
 
   second-job:
     needs: hello
@@ -45,9 +52,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show value from first job
+      - name: Show static value from first job
         run: |
-          echo "Value from first job: ${{ needs.hello.outputs.VALUE_FROM_HELLO }}"
+          echo "Static value from hello job: ${{ needs.hello.outputs.STATIC_VALUE }}"
+
+      - name: Show dynamic value from first job
+        run: |
+          echo "Dynamic value from hello job: ${{ needs.hello.outputs.DYNAMIC_VALUE }}"
 
       - name: List files in second job
         run: ls
